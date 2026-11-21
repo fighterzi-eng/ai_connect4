@@ -1,41 +1,27 @@
-from game.game import Game
+# usr/bin/python3
 from time import perf_counter
+from game.game import Game
+from gui.gui import GUI
 
-#place holders until gui input for start
-LENGHT=6
-WIDTH=7
-CUTOFF=5
+gui = GUI()
+WIDTH, LENGHT, CUTOFF = gui.get_parameters()
 
-
-def printboard(board):
-    for i in range(LENGHT):
-        for j in range(WIDTH):
-            print(board[j][i]+"  ",end="")
-        print("\n")
-
-
-
-system=Game(WIDTH,LENGHT,CUTOFF)
+system = Game(WIDTH, LENGHT, CUTOFF)
+gui.display_board(system.get_board())
 
 while not system.is_end():
-    printboard(system.get_board())
-    if system.get_turn() =="p":
-        #place holder for gui input
-        move=int(input("enter your move from 0 to width -1"))
-        while system.playerturn(move) is None:
-            move=int(input("invalid move try again enter your move from 0 to width -1"))
-        #function to update the gui
+    if system.get_turn() == "p":
+        move = gui.get_move()
+        while not system.playerturn(move):          
+            move = gui.get_move()
+        gui.update_display(system.get_board())
     else:
-        start=perf_counter()
-        tree= system.computerturn()
-        end=perf_counter()
-        time=end-start
-        print(f"time taken: {time} ")
-        # update the gui with move
-        #functions to display the tree and time and nodes expanded listing node type in its shape upuerr triangle or lower triangle  its v ,alpa,beta
-playerscore,computerscore=system.get_scores()
+        start = perf_counter()
+        tree = system.computerturn()
+        time=perf_counter() - start
+        gui.update_display(system.get_board())
+        gui.display_stats(time, tree)
+        gui.display_tree(tree,CUTOFF)
 
-print(f"player score: {playerscore}   computerscore: {computerscore}")
-
-
-      
+playerscore, computerscore = system.get_scores()
+gui.display_result(playerscore, computerscore)
