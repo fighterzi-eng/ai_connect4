@@ -36,27 +36,26 @@ class Game_state(State):
         self.computer_bits = c
         self.empty_bits = full & ~(p | c)   # sentinel bits stay 0
 
-    def _convolve(self, kernel, sig_a, sig_e, s):
-        """Slide a 4-tap kernel over the signals, sampled every s bits."""
-        count = 0
-        for i in range(self.nbits):                 # slide the kernel
-            win_a = sig_a[i : i + 4 * s : s]        # sample every s
-            win_e = sig_e[i : i + 4 * s : s]
-            if all(win_a[k] if ch == "X" else win_e[k]
-                   for k, ch in enumerate(kernel)):
-                count += 1
-        return count
+    def _convolve(self, kernel, a, s):
+       
+        e = self.empty_bits
+        out = a if kernel[0] == "X" else e
+
+        for k in range(1, 4):
+            # each tap in the kernel represnt a point to apply convouloution
+            #iterating over kernel since its smaller
+            tap = a if kernel[k] == "X" else e
+            # shifting to simulate sliding the k* simulate sampling every time
+            shifted = tap >> (k * s)
+            # applying bitwise filter
+            out = out & shifted
+        return out.bit_count()
 
     def _count(self, kernels, a):
-        # build the zero-padded signals once; padding covers the largest step
-        pad = [0] * (3 * max(self.steps))
-        sig_a = [(a >> j) & 1 for j in range(self.nbits)] + pad
-        sig_e = [(self.empty_bits >> j) & 1 for j in range(self.nbits)] + pad
-
         total = 0
         for k in kernels:
             for step in self.steps:
-                total += self._convolve(k, sig_a, sig_e, step)
+                total += self._convolve(k, a, step)
         return total
 
    
