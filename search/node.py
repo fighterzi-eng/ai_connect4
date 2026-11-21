@@ -18,7 +18,7 @@ class State(ABC):
         pass
 
     @abstractmethod
-    def get_move():
+    def get_move(self):
         pass
 
 
@@ -40,7 +40,7 @@ class Node:
 
     def get_children(self):
         children=[]
-        for i in self.state.children():
+        for i in self.state.get_children():
             children.append(Node(i))
         return children
 
@@ -51,3 +51,6 @@ class Node:
 
     def __hash__(self):
         return hash(self.state)
+
+    def __eq__(self,other):
+        return (self.state==other.state)

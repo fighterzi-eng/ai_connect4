@@ -1,4 +1,4 @@
-from node import Node
+from search.node import Node
 
 
 class  Minimax():
@@ -26,7 +26,7 @@ class  Minimax():
         self.tree[node]=[]
         for child in node.get_children():
             self.tree[node].append(child)
-            currentv=self.max(self,child,current_depth+1,alpha,beta).value
+            currentv=self.max(child,current_depth+1,alpha,beta).value
             if v> currentv:
                 v=currentv
                 returned_node=child
@@ -34,9 +34,11 @@ class  Minimax():
             if beta<=alpha:
                 node.alpha=alpha
                 node.beta=beta
+                node.value=v
                 return returned_node
         node.alpha=alpha
         node.beta=beta
+        node.value=v
         return returned_node
 
 
@@ -55,7 +57,7 @@ class  Minimax():
         self.tree[node]=[]
         for child in node.get_children():
             self.tree[node].append(child)
-            currentv=self.min(self,child,current_depth+1,alpha,beta).value
+            currentv=self.min(child,current_depth+1,alpha,beta).value
             if v< currentv:
                 v=currentv
                 returned_node=child
@@ -63,18 +65,21 @@ class  Minimax():
             if alpha>=beta:
                 node.alpha=alpha
                 node.beta=beta
+                node.value=v
                 return returned_node
         node.alpha=alpha
         node.beta=beta
+        node.value=v
         return returned_node
-
-    def set_node(self,node):
-        self.Node=node
 
 
     def search(self):
         choosen_node =self.max(self.node,0,float('-inf'),float('inf'))
         return choosen_node.state.get_move()
+
+    def update_node(self,node):
+        self.node=node
+        self.tree = {node: []}
 
 
 

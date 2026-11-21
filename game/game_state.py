@@ -113,3 +113,10 @@ class Game_state(State):
 
     def __hash__(self):
         return hash((self.player_bits, self.computer_bits, self.turn))
+    def final_score(self):
+        c, p = self.computer_bits, self.player_bits
+
+        # completed fours dominate; the final score is just the difference
+        pscore = 100 * ( self._count(self.FOURS, p))
+        cscore=100*(self._count(self.FOURS, c) )
+        return pscore,cscore
